@@ -61,4 +61,14 @@ class BasketCG extends Component
         return $this->repo->remove($prodId);
     }
 
+    public function hasProd()
+    {
+        return $this->repo->hasProd();
+    }
+
+    public function clear()
+    {
+        $this->repo->clear();
+    }
+
 }

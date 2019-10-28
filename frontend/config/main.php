@@ -17,6 +17,9 @@ return [
         'basket' => [
             'class' => 'app\modules\basket\Basket',
         ],
+        'order' => [
+            'class' => 'frontend\modules\order\Order',
+        ],
     ],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [

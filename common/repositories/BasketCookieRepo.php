@@ -53,6 +53,15 @@ class BasketCookieRepo extends BaseObject implements BasketRepo
         $this->setCoookie($result);
     }
 
+    public function hasProd()
+    {
+        $cookies = Yii::$app->request->cookies;
+        if ($cookies->has($this->cookieName)) {
+            return json_decode($cookies->getValue($this->cookieName), true);
+        }
+        return [];
+    }
+
     private function getCookie()
     {
         $cookies = Yii::$app->request->cookies;
@@ -71,5 +80,10 @@ class BasketCookieRepo extends BaseObject implements BasketRepo
             'path' => '/'
 
         ]));
+    }
+
+    public function clear()
+    {
+        $this->setCoookie('');
     }
 }

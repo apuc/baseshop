@@ -15,4 +15,8 @@ Interface BasketRepo
     public function getList();
 
     public function remove($prodId);
+
+    public function hasProd();
+
+    public function clear();
 }

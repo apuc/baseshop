@@ -29,4 +29,14 @@ class BasketDBRepo extends BaseObject implements BasketRepo
     {
         // TODO: Implement remove() method.
     }
+
+    public function hasProd()
+    {
+        // TODO: Implement hasProd() method.
+    }
+
+    public function clear()
+    {
+        // TODO: Implement clear() method.
+    }
 }

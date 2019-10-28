@@ -1,23 +1,21 @@
 <?php
 
-namespace app\modules\basket\controllers;
+namespace frontend\modules\order\controllers;
 
-use common\models\Order;
 use common\models\OrderProduct;
-use common\models\Products;
 use Yii;
-use common\models\Basket;
-use app\modules\basket\models\BasketSearch;
+use common\models\Order;
+use frontend\modules\order\models\OrderSearch;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\Json;
 
 /**
- * BasketController implements the CRUD actions for Basket model.
+ * OrderController implements the CRUD actions for Order model.
  */
-class BasketController extends Controller
+class OrderController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -31,51 +29,60 @@ class BasketController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
         ];
     }
 
     /**
-     * Lists all Basket models.
+     * Lists all Order models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $products = Yii::$app->basketCG->getList();
-        $ids = [];
-        foreach ($products as $product) {
-            $ids[] = $product['id'];
-        }
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => Products::find()->where(['id' => $ids]),
-        ]);
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
-     * Displays a single Basket model.
+     * Displays a single Order model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
     {
+        $prodDataProvider = new ActiveDataProvider([
+            'query' => OrderProduct::find()->where(['order_id' => $id])
+        ]);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'prodDataProvider' => $prodDataProvider
         ]);
     }
 
     /**
-     * Creates a new Basket model.
+     * Creates a new Order model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Basket();
+        $model = new Order();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -87,7 +94,7 @@ class BasketController extends Controller
     }
 
     /**
-     * Updates an existing Basket model.
+     * Updates an existing Order model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -107,7 +114,7 @@ class BasketController extends Controller
     }
 
     /**
-     * Deletes an existing Basket model.
+     * Deletes an existing Order model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -115,61 +122,25 @@ class BasketController extends Controller
      */
     public function actionDelete($id)
     {
+        OrderProduct::deleteAll(['order_id' => $id]);
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the Basket model based on its primary key value.
+     * Finds the Order model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Basket the loaded model
+     * @return Order the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Basket::findOne($id)) !== null) {
+        if (($model = Order::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    public function actionSave()
-    {
-        $product_id = Yii::$app->request->get('product_id');
-        Yii::$app->basketCG->add($product_id);
-
-        Yii::$app->session->setFlash('success', 'Товар добавлен в корзину');
-        return $this->redirect('/products/products');
-    }
-
-    public function actionDel()
-    {
-        $product_id = Yii::$app->request->get('product_id');
-        Yii::$app->basketCG->remove($product_id);
-
-        Yii::$app->session->setFlash('success', 'Товар удален из корзины');
-        return $this->redirect('/basket/basket');
-    }
-
-    public function actionCreateOrder()
-    {
-        $order = new Order();
-        $order->user_id = Yii::$app->user->id;
-        $order->status = Order::STATUS_ACTIVE;
-        $order->save();
-
-        $products = Yii::$app->basketCG->getList();
-        foreach ($products as $product){
-            $item = new OrderProduct();
-            $item->product_id = $product['id'];
-            $item->order_id = $order->id;
-            $item->save();
-        }
-        Yii::$app->basketCG->clear();
-
-        return $this->redirect('/order/order');
     }
 }

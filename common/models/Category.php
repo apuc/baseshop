@@ -61,21 +61,32 @@ class Category extends \yii\db\ActiveRecord
     public static function getArrayForSidebar()
     {
         $result = [];
+        if (Yii::$app->user->isGuest) {
+            $result[] = ['label' => 'Вход', 'url' => '/site/login'];
+        } else {
+            $result[] = [
+                'label' => 'Выход (' . Yii::$app->user->identity->username . ')',
+                'url' => ['/site/logout'],
+                'linkOptions' => ['data-method' => 'post']
+            ];
+            $result[] = ['label' => 'Заказы', 'url' => '/order/order'];
+        }
         $result[] = ['label' => 'Корзина', 'url' => '/basket/basket'];
         $result[] = ['label' => 'Сравнить', 'url' => '/products/products/compare'];
         $result[] = ['label' => 'Избранное', 'url' => '/products/products/favorite'];
         $result[] = ['label' => 'Все товары', 'url' => '/products/products'];
         $categories = Category::find()->all();
         foreach ($categories as $category) {
-            $result[] = ['label' => $category->name, 'url' => '/products/products?ProductsSearch[category_id]='.$category->id];
+            $result[] = ['label' => $category->name, 'url' => '/products/products?ProductsSearch[category_id]=' . $category->id];
         }
         return $result;
     }
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getProducts()
     {
         return $this->hasMany(Products::className(), ['category_id' => 'id']);
-}
+    }
 }
