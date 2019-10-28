@@ -2,9 +2,11 @@
 
 namespace app\modules\basket\controllers;
 
+use common\models\Products;
 use Yii;
 use common\models\Basket;
 use app\modules\basket\models\BasketSearch;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -36,11 +38,17 @@ class BasketController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new BasketSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $products = Yii::$app->basketCG->getList();
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product['id'];
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => Products::find()->where(['id' => $ids]),
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -128,25 +136,19 @@ class BasketController extends Controller
 
     public function actionSave()
     {
-        //$cookies = Yii::$app->request->cookies;
-        // var_dump($cookies->getValue('curUs', 'en'));die;
-        $model = new Basket();
-        $model->product_id = Yii::$app->request->get('product_id');
-        if (isset(Yii::$app->request->cookies['curUs'])) {
-            $unjid = json_decode(Yii::$app->request->cookies['curUs']);
-            $unjid[] = $model->product_id;
-            $result = json_encode($unjid);
-        } else
-            {
-                $result = json_encode([$model->product_id]);
-            }
-        Yii::$app->getResponse()->getCookies()->add(new \yii\web\Cookie([
-            'name' => 'curUs',
-            'value' => $result,
-            'domain' => '.shop.loc',
-            'expire' => time() + 86400 * 365,
-            'path' => '/'
+        $product_id = Yii::$app->request->get('product_id');
+        Yii::$app->basketCG->add($product_id);
 
-        ]));
+        Yii::$app->session->setFlash('success', 'Товар добавлен в корзину');
+        return $this->redirect('/products/products');
+    }
+
+    public function actionDel()
+    {
+        $product_id = Yii::$app->request->get('product_id');
+        Yii::$app->basketCG->remove($product_id);
+
+        Yii::$app->session->setFlash('success', 'Товар удален из корзины');
+        return $this->redirect('/basket/basket');
     }
 }

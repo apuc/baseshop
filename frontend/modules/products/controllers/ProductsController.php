@@ -5,6 +5,7 @@ namespace app\modules\products\controllers;
 use Yii;
 use common\models\Products;
 use app\modules\products\models\ProductsSearch;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -107,6 +108,77 @@ class ProductsController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionCompare()
+    {
+        $products = Yii::$app->compareCG->getList();
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product['id'];
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => Products::find()->where(['id' => $ids]),
+        ]);
+
+        return $this->render('compare', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionAddToCompare()
+    {
+        $product_id = Yii::$app->request->get('product_id');
+        Yii::$app->compareCG->add($product_id);
+
+        Yii::$app->session->setFlash('success', 'Товар добавлен к сравнению');
+        return $this->redirect('/products/products');
+    }
+
+    public function actionDelFromCompare()
+    {
+        $product_id = Yii::$app->request->get('product_id');
+        Yii::$app->compareCG->remove($product_id);
+
+        Yii::$app->session->setFlash('success', 'Товар удален из сравнения');
+        return $this->redirect('/products/products');
+    }
+
+
+    public function actionFavorite()
+    {
+        $products = Yii::$app->favoriteCG->getList();
+        $ids = [];
+        foreach ($products as $product) {
+            $ids[] = $product['id'];
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => Products::find()->where(['id' => $ids]),
+        ]);
+
+        return $this->render('favorite', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionAddToFavorite()
+    {
+        $product_id = Yii::$app->request->get('product_id');
+        Yii::$app->favoriteCG->add($product_id);
+
+        Yii::$app->session->setFlash('success', 'Товар добавлен в избранное');
+        return $this->redirect('/products/products');
+    }
+
+    public function actionDelFromFavorite()
+    {
+        $product_id = Yii::$app->request->get('product_id');
+        Yii::$app->favoriteCG->remove($product_id);
+
+        Yii::$app->session->setFlash('success', 'Товар удален из избранного');
+        return $this->redirect('/products/products');
     }
 
     /**

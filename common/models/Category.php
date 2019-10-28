@@ -62,6 +62,8 @@ class Category extends \yii\db\ActiveRecord
     {
         $result = [];
         $result[] = ['label' => 'Корзина', 'url' => '/basket/basket'];
+        $result[] = ['label' => 'Сравнить', 'url' => '/products/products/compare'];
+        $result[] = ['label' => 'Избранное', 'url' => '/products/products/favorite'];
         $result[] = ['label' => 'Все товары', 'url' => '/products/products'];
         $categories = Category::find()->all();
         foreach ($categories as $category) {

@@ -8,7 +8,7 @@ use yii\helpers\Url;
 /* @var $searchModel app\modules\basket\models\BasketSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Корзина';
+$this->title = 'Избранное';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="basket-index">
@@ -19,21 +19,31 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'attribute' => 'title',
+                'format' => 'raw',
+                'value' => function($model){
+                    return Html::a($model->title, Url::toRoute(['view', 'id' => $model->id]));
+                },
             ],
             [
                 'attribute' => 'photo',
             ],
             [
+                'attribute' => 'price',
+            ],
+            [
+                'attribute' => 'weight',
+            ],
+            [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{myButton}',
                 'buttons' => [
-                    'myButton' => function($url, $model, $key) {
-                        return Html::a('Удалить', Url::toRoute(['/basket/basket/del', 'product_id' => $model->id]));
+                    'myButton' => function ($url, $model, $key) {
+                        return Html::a('Удалить', Url::toRoute(['/products/products/del-from-favorite', 'product_id' => $model->id]));
                     }
                 ]
             ]
 
-           // ['class' => 'yii\grid\ActionColumn'],
+            // ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

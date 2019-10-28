@@ -18,7 +18,7 @@ class m191028_094525_create_basket_table extends Migration
             'product_id' => $this->integer(11),
         ]);
         $this->addForeignKey('fromProductId', 'basket','product_id', 'products', 'id');
-        $this->addForeignKey('userId', 'basket','user_id', 'user', 'id');
+        $this->addForeignKey('userIdB', 'basket','user_id', 'user', 'id');
     }
 
     /**
@@ -27,7 +27,7 @@ class m191028_094525_create_basket_table extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('productId', 'basket');
-        $this->dropForeignKey('userId', 'basket');
+        $this->dropForeignKey('userIdB', 'basket');
         $this->dropTable('{{%basket}}');
     }
 }

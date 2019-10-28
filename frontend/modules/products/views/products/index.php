@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'title',
                 'format' => 'raw',
-                'value' => function($model){
+                'value' => function ($model) {
                     return Html::a($model->title, Url::toRoute(['view', 'id' => $model->id]));
                 },
             ],
@@ -36,8 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'photo',
                 'format' => 'raw',
-                'value' => function ($model)
-                {
+                'value' => function ($model) {
                     return "<img src='$model->photo'/>";
                 }
             ],
@@ -49,15 +48,32 @@ $this->params['breadcrumbs'][] = $this->title;
                     return \common\models\Order::getStatusText()[$products->status];
                 }
             ],
-
             [
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{myButton}',
                 'buttons' => [
-                    'myButton' => function($url, $model, $key) {
+                    'myButton' => function ($url, $model, $key) {
                         return Html::a('В корзину', Url::toRoute(['/basket/basket/save', 'product_id' => $model->id]));
-                }
+                    }
                 ]
+            ],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{myButton}',
+                'buttons' => [
+                    'myButton' => function ($url, $model, $key) {
+                        return Html::a('Добавить к сравнению', Url::toRoute(['/products/products/add-to-compare', 'product_id' => $model->id]));
+                    }
+                ],
+            ],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{myButton}',
+                'buttons' => [
+                    'myButton' => function ($url, $model, $key) {
+                        return Html::a('В избранное', Url::toRoute(['/products/products/add-to-favorite', 'product_id' => $model->id]));
+                    }
+                ],
             ]
         ],
     ]); ?>
