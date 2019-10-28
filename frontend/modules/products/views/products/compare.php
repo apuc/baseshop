@@ -26,6 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'photo',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return "<img src='$model->photo' width='200'/>";
+                }
             ],
             [
                 'attribute' => 'price',
