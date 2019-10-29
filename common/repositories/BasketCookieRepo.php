@@ -56,10 +56,7 @@ class BasketCookieRepo extends BaseObject implements BasketRepo
     public function hasProd()
     {
         $cookies = Yii::$app->request->cookies;
-        if ($cookies->has($this->cookieName)) {
-            return json_decode($cookies->getValue($this->cookieName), true);
-        }
-        return [];
+        return $cookies->has($this->cookieName);
     }
 
     private function getCookie()

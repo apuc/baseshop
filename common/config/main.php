@@ -12,7 +12,7 @@ return [
         'basketCG' => [
             'class' => \common\components\BasketCG::class,
             'cookieName' => 'basketCG',
-            //'type' => 'db',
+            'type' => 'db',
         ],
         'compareCG' => [
             'class' => \common\components\CompareCG::class
